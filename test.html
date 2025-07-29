@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Protection des réserves naturelles de la NC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .bg-slideshow {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .bg-slide {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1.5s;
+        }
+        .bg-slide.active {
+            opacity: 1;
+            z-index: 1;
+        }
+        .container, .main-content {
+            max-width: 850px;
+            margin: 48px auto;
+            background: #fafafa;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(24,90,157,0.10);
+            padding: 40px 32px 32px 32px;
+            position: relative;
+            z-index: 2;
+        }
+        .chaos-content {
+            background: rgba(255,255,255,0.7); /* moins transparent */
+            border: 3px solid #e53935;
+            box-shadow: 0 0 30px #e53935, 0 0 10px #000;
+    /* animation: shake 0.5s infinite alternate;  <-- animation supprimée */
+        }
+        }
+        @keyframes shake {
+            0% { transform: translate(0px, 0px) rotate(-1deg);}
+            100% { transform: translate(4px, -2px) rotate(1deg);}
+        }
+        .hidden { display: none; }
+        h1 {
+            color: #185a9d;
+            font-size: 2.6em;
+            margin-bottom: 0.2em;
+            letter-spacing: 1px;
+        }
+        h2 {
+            color: #43cea2;
+            margin-top: 0;
+            font-weight: 400;
+        }
+        .names {
+            font-size: 1.3em;
+            color: #185a9d;
+            margin-bottom: 24px;
+            font-weight: bold;
+        }
+        .intro {
+            font-size: 1.18em;
+            color: #333;
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+        .axes {
+            background: #eafaf1;
+            border-left: 5px solid #43cea2;
+            padding: 18px 24px;
+            border-radius: 10px;
+            margin-bottom: 32px;
+        }
+        .axes-title {
+            color: #185a9d;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .start-btn {
+            background: linear-gradient(90deg, #43cea2 0%, #185a9d 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 16px 36px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 24px;
+            box-shadow: 0 2px 8px rgba(24,90,157,0.10);
+        }
+        .start-btn:hover {
+            background: linear-gradient(90deg, #185a9d 0%, #43cea2 100%);
+        }
+        .charts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 36px;
+            justify-content: center;
+            margin-top: 36px;
+        }
+        .chart-container {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 2px 8px rgba(67,206,162,0.10);
+            min-width: 260px;
+        }
+        .signature {
+            margin-top: 40px;
+            font-style: italic;
+            color: #185a9d;
+            font-size: 1.1em;
+            text-align: right;
+        }
+        @media (max-width: 900px) {
+            .container, .main-content { padding: 18px 6px; }
+            .charts { flex-direction: column; align-items: center; }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Slideshow background -->
+<div class="bg-slideshow" id="bgSlideshow">
+    <!-- Vidéo en fond (exemple avec une vidéo mp4, autoplay, muet, boucle) -->
+    <video id="bgVideo" class="bg-slide" autoplay muted loop playsinline style="object-fit:cover; width:100vw; height:100vh;">
+        <source src="https://www.shutterstock.com/fr/video/clip-1104683765-flyover-above-wonderful-popular-snorkeling-spot-shark" type="video/mp4">
+        Votre navigateur ne supporte pas la vidéo.
+    </video>
+    <!-- Images de fond -->
+    <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80" class="bg-slide active" alt="Nature NC 1">
+    <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=1200&q=80" class="bg-slide" alt="Nature NC 2">
+    <img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80" class="bg-slide" alt="Nature NC 3">
+    <img src="https://wallpapercat.com/w/full/1/7/e/1621950-1920x1080-desktop-full-hd-new-caledonia-background-image.jpg" class="bg-slide" alt="Nature NC 4">
+    <!-- Images de destruction pour CHAOS 2050 -->
+    <img src="https://www.ofb.gouv.fr/sites/default/files/Images/Photos/Esp%C3%A8ces/Faune/bavayia-exsuccida-thomas-duval.jpg" class="bg-slide bg-chaos" style="display:none;" alt="Déforestation Chaos">
+    <img src="https://t4.ftcdn.net/jpg/06/49/97/61/360_F_649976191_Zqncvnaveh5GCRSNvgOYIQEuQQb1gvwl.jpg" class="bg-slide bg-chaos" style="display:none;" alt="Pollution Chaos">
+    <img src="https://www.dnc.nc/wp-content/uploads/2020/07/15-Algues-hippodrome.jpg" class="bg-slide bg-chaos" style="display:none;" alt="Algues Chaos">
+    <img src="https://www.mata-i-nautisme.fr/wp-content/uploads/2018/08/incendies-en-nouvelle-caledonie-5.jpg" class="bg-slide bg-chaos" style="display:none;" alt="Incendies Chaos">
+</div>
+ 
+<!-- ...existing code... -->
+    <!-- Page de présentation -->
+    <div class="container" id="presentation">
+        <h1>Bienvenue sur notre projet</h1>
+        <div class="names">Yoran Tairio, Tui Fuahea et Mickal Seo</div>
+        <div class="intro">
+            Nous participons au concours <b>Blue Pacific 2050</b> qui vise à promouvoir une vision commune pour l’avenir du Pacifique.<br><br>
+            Notre projet s’inscrit dans la <b>Stratégie 2050 pour le continent Pacifique Bleu</b> et met en avant la protection des réserves naturelles de la Nouvelle-Calédonie.<br><br>
+            Nous avons choisi de nous concentrer sur les axes suivants :
+        </div>
+        <div class="axes">
+            <div class="axes-title">Axes du concours abordés par notre projet :</div>
+            <ol>
+                <li><b>Ressources et développement économique</b> : Préserver les réserves naturelles permet de garantir des ressources durables pour les générations futures.</li>
+                <li><b>Changement climatique et catastrophes</b> : Les réserves naturelles jouent un rôle clé dans la lutte contre le changement climatique et la protection contre les catastrophes naturelles.</li>
+                <li><b>Océan et environnement</b> : Notre projet vise à sensibiliser à la préservation de la biodiversité marine et terrestre en Nouvelle-Calédonie.</li>
+            </ol>
+        </div>
+        <button class="start-btn" onclick="showMainContent()">Découvrir le projet</button>
+    </div>
+ 
+    <!-- Page principale (cachée au début) -->
+    <div class="main-content hidden" id="mainContent">
+        <h1>Protection des réserves naturelles de la NC</h1>
+        <h2>Par Yoran Tairio, Tui Fuahea et Mickal Seo</h2>
+        <p>
+            La Nouvelle-Calédonie est un véritable joyau de biodiversité, abritant de nombreuses espèces uniques au monde.
+            Les réserves naturelles protègent ces trésors contre la déforestation, la pollution et le braconnage.
+            Grâce à l'engagement des habitants et des autorités, des actions de sensibilisation et de restauration sont menées pour préserver ces espaces précieux.
+        </p>
+        <p>
+            Protéger les réserves naturelles, c'est garantir un avenir durable à la faune, à la flore et aux générations futures de la Nouvelle-Calédonie.
+        </p>
+        <div class="charts">
+            <div class="chart-container">
+                <canvas id="pieChart" width="260" height="260"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="barChart" width="260" height="260"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="lineChart" width="260" height="260"></canvas>
+            </div>
+        </div>
+        <div class="signature">
+            — Yoran Tairio, Tui Fuahea et Mickal Seo
+        </div>
+        <div style="text-align:center; margin-top:40px;">
+            <button class="start-btn" style="background: #e53935;" onclick="showChaosPage()">Et si on ne fait rien ?</button>
+        </div>
+    </div>
+ 
+    <!-- Page CHAOS 2050 (cachée au début) -->
+    <div class="main-content chaos-content hidden" id="chaos2050">
+        <h1 style="color:#e53935; text-shadow:2px 2px 8px #000;">2050 : Nos réserves détruites ?</h1>
+        <h2 style="color:#b71c1c;">Un futur à éviter !</h2>
+        <p style="font-size:1.2em; color:#222; background:rgba(255,255,255,0.5); border-radius:10px; padding:12px;">
+            Si rien n'est fait, la Nouvelle-Calédonie pourrait perdre une grande partie de ses richesses naturelles d'ici 2050.<br>
+            <b>Déforestation, pollution, incendies, disparition des espèces...</b> Les conséquences seraient catastrophiques pour la biodiversité, l'économie et la vie des habitants.
+        </p>
+        <div style="display:flex; flex-wrap:wrap; gap:24px; justify-content:center; margin:32px 0;">
+            <div style="display:flex; flex-direction:column; align-items:center;">
+                <img src="https://www.ofb.gouv.fr/sites/default/files/Images/Photos/Esp%C3%A8ces/Faune/bavayia-exsuccida-thomas-duval.jpg" alt="Déforestation" style="width:220px; border-radius:12px; box-shadow:0 2px 12px #e53935;">
+                    <span style="margin-top:8px; color:#b71c1c; font-weight:bold;">Disparition de différentes éspèces</span>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center;">
+                <img src="https://t4.ftcdn.net/jpg/06/49/97/61/360_F_649976191_Zqncvnaveh5GCRSNvgOYIQEuQQb1gvwl.jpg" alt="Pollution" style="width:220px; border-radius:12px; box-shadow:0 2px 12px #e53935;">
+                <span style="margin-top:8px; color:#b71c1c; font-weight:bold;">Pollution</span>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center;">
+                <img src="https://www.dnc.nc/wp-content/uploads/2020/07/15-Algues-hippodrome.jpg" alt="Algues invasives" style="width:220px; border-radius:12px; box-shadow:0 2px 12px #e53935;">
+                <span style="margin-top:8px; color:#b71c1c; font-weight:bold;">Algues invasives</span>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center;">
+                <img src="https://www.mata-i-nautisme.fr/wp-content/uploads/2018/08/incendies-en-nouvelle-caledonie-5.jpg" alt="Incendies" style="width:220px; border-radius:12px; box-shadow:0 2px 12px #e53935;">
+                <span style="margin-top:8px; color:#b71c1c; font-weight:bold;">Incendies</span>
+            </div>
+        </div>
+        <ul style="font-size:1.15em; color:#b71c1c; font-weight:bold; background:rgba(255,255,255,0.6); border-radius:10px; padding:18px;">
+            <li>Disparition de nombreuses espèces animales et végétales</li>
+            <li>Océans pollués, coraux morts</li>
+            <li>Terres infertiles, feux de brousse fréquents</li>
+            <li>Perte de ressources pour les générations futures</li>
+        </ul>
+        <div style="margin-top:32px; text-align:center;">
+            <span style="font-size:1.3em; color:#e53935; font-weight:bold; text-shadow:1px 1px 8px #fff;">
+                Il est encore temps d'agir !<br>
+                <span style="color:#185a9d;">Protégeons nos réserves naturelles !</span>
+            </span>
+        </div>
+        <div style="text-align:center; margin-top:32px;">
+            <button class="start-btn" onclick="backToPresentation()" style="background:#185a9d;">Retour à l'accueil</button>
+        </div>
+    </div>
+ 
+    <script>
+        let slides = Array.from(document.querySelectorAll('.bg-slide:not(.bg-chaos)'));
+        let chaosSlides = Array.from(document.querySelectorAll('.bg-slide.bg-chaos'));
+        let currentSlide = 0;
+        let intervalId;
+ 
+        function startSlideshow(slidesToShow) {
+            // Cache tout
+            document.querySelectorAll('.bg-slide').forEach(s => {
+                s.classList.remove('active');
+                s.style.display = 'none';
+            });
+            // Affiche le bon groupe
+            slidesToShow.forEach(s => s.style.display = 'block');
+            // Active la première
+            currentSlide = 0;
+            slidesToShow[currentSlide].classList.add('active');
+            // Lance le slideshow
+            if (intervalId) clearInterval(intervalId);
+            intervalId = setInterval(() => {
+                slidesToShow[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slidesToShow.length;
+                slidesToShow[currentSlide].classList.add('active');
+            }, 4000);
+        }
+ 
+    // Démarre le slideshow normal au chargement
+    window.onload = () => {
+        slides = Array.from(document.querySelectorAll('.bg-slide:not(.bg-chaos)'));
+        startSlideshow(slides);
+    };
+        // Affiche la page principale et cache la présentation
+        function showMainContent() {
+            document.getElementById('presentation').classList.add('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
+            document.getElementById('chaos2050').classList.add('hidden');
+            slides = Array.from(document.querySelectorAll('.bg-slide:not(.bg-chaos)'));
+            startSlideshow(slides);
+            setTimeout(initCharts, 200);
+        }
+ 
+        // Affiche la page chaos 2050
+        function showChaosPage() {
+                document.getElementById('presentation').classList.add('hidden');
+                document.getElementById('mainContent').classList.add('hidden');
+                document.getElementById('chaos2050').classList.remove('hidden');
+                chaosSlides = Array.from(document.querySelectorAll('.bg-slide.bg-chaos'));
+                startSlideshow(chaosSlides);
+        }
+ 
+        // Retour à la présentation
+        function backToPresentation() {
+            document.getElementById('presentation').classList.remove('hidden');
+            document.getElementById('mainContent').classList.add('hidden');
+            document.getElementById('chaos2050').classList.add('hidden');
+            slides = Array.from(document.querySelectorAll('.bg-slide:not(.bg-chaos)'));
+            startSlideshow(slides);
+        }  
+ 
+        // Initialise les graphiques
+        function initCharts() {
+            // Pie Chart
+            new Chart(document.getElementById('pieChart'), {
+                type: 'pie',
+                data: {
+                    labels: ['Forêts', 'Récifs', 'Espèces protégées'],
+                    datasets: [{
+                        data: [40, 35, 25],
+                        backgroundColor: ['#43cea2', '#185a9d', '#f7971e']
+                    }]
+                },
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Répartition des zones protégées'
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+ 
+            // Bar Chart
+            new Chart(document.getElementById('barChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['2015', '2020', '2025'],
+                    datasets: [{
+                        label: 'Nombre de réserves',
+                        data: [12, 18, 24],
+                        backgroundColor: '#185a9d'
+                    }]
+                },
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Évolution du nombre de réserves'
+                        },
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 2 }
+                        }
+                    }
+                }
+            });
+ 
+            // Line Chart
+            new Chart(document.getElementById('lineChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+                    datasets: [{
+                        label: 'Visiteurs dans les réserves (en milliers)',
+                        data: [2, 3, 4, 6, 5, 7],
+                        fill: true,
+                        borderColor: '#43cea2',
+                        backgroundColor: 'rgba(67,206,162,0.15)',
+                        tension: 0.3,
+                        pointBackgroundColor: '#185a9d'
+                    }]
+                },
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Visiteurs mensuels dans les réserves'
+                        },
+                        legend: { display: true, position: 'bottom' }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+ 
+ 
